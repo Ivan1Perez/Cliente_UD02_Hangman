@@ -1,5 +1,5 @@
 /*
-
+    Muñeco: https://gist.github.com/chrishorton/8510732aa9a80a03c829b09f12e20d9c
     1. Guardar nombre jugador. COMPLETADO
     2. Al empezar el juego se podrá elegir jugar o introducir palabras. COMPLETADO
     3. Dar opción al usuario de introducir palabras según niveles (fácil[4 o menos], medio [de 5 a 7], difícil [7 o más]).
