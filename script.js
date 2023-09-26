@@ -39,7 +39,7 @@ function main() {
   } else {
     do {
       wordsGenerated = false;
-      generateNewWord(false);
+      generateNewWord(0, false);
     } while (wordsGenerated);
   }
 
@@ -83,48 +83,67 @@ function optionSetWord_PlayFunction() {
   return option;
 }
 
-function generateNewWord(noWords) {
-  let noWordsMsj = "There are no words for this level.\n";
+function generateNewWord(level, noWords) {
   let options =
     " - Type '1' to enter an easy word (Max. 4 letters).\n" +
     " - Type '2' to enter a medium level word (Between 5 & 7 letters).\n" +
     " - Type '3' to enter a hard level word (7 or more letters).";
-  let optionMsj;
+  let option;
   let errorMsj = "Error. Please, enter either '1', '2' or '3' to proceed.\n";
 
   if (noWords) {
-    optionMsj = prompt(`${noWordsMsj}${chooseOptionsMsj}${options}`);
+    enterWord(level, noWords);
   } else {
-    optionMsj = prompt(`${chooseOptionsMsj}${options}`);
+    option = prompt(`${chooseOptionsMsj}${options}`);
+
+    do {
+      if (option !== "1" && option !== "2" && option !== "3") {
+        option = prompt(`${errorMsj}${options}`);
+      }
+    } while (option !== "1" && option !== "2" && option !== "3");
+
+    enterWord(option, noWords);
   }
-
-  do {
-    if (optionMsj !== "1" && optionMsj !== "2" && optionMsj !== "3") {
-      optionMsj = prompt(`${errorMsj}${options}`);
-    }
-  } while (optionMsj !== "1" && optionMsj !== "2" && optionMsj !== "3");
-
-  enterWord(optionMsj);
 
   wordsGenerated = anotherWordOption();
 }
 
-function enterWord(optionNumber) {
+function enterWord(optionNumber, noWords) {
   let introducedWord;
   let maxLengthAllowed;
   let minLenghtAllowed;
+  let noWordsMsj = "There are no words available in this level. Please:\n";
+  let introduceEasyWordMsj =
+    "Add an easy word.\n" +
+    "Remember:\n" +
+    " - Maximun 4 letters long.\n" +
+    " - No spaces.\n" +
+    " - No numbers.";
+  let introduceMedWordMsj =
+    "Add a medium word.\n" +
+    "Remember:\n" +
+    " - Between 5 and 7 letters long.\n" +
+    " - No spaces.\n" +
+    " - No numbers.";
+  let introduceHardWordMsj =
+    "Add a hard word.\n" +
+    "Remember:\n" +
+    " - More than 7 letters long.\n" +
+    " - No spaces.\n" +
+    " - No numbers.\n" +
+    " - Max 100 letters long.";
+
+  if (noWords) {
+    introduceEasyWordMsj = noWordsMsj + introduceEasyWordMsj;
+    introduceMedWordMsj = noWordsMsj + introduceMedWordMsj;
+    introduceHardWordMsj = noWordsMsj + introduceHardWordMsj;
+  }
 
   switch (optionNumber) {
     case "1":
       maxLengthAllowed = 4;
       minLenghtAllowed = 1;
-      introducedWord = prompt(
-        "Add an easy word.\n" +
-          "Remember:\n" +
-          " - Maximun 4 letters long.\n" +
-          " - No spaces.\n" +
-          " - No numbers."
-      );
+      introducedWord = prompt(introduceEasyWordMsj);
 
       introducedWord = preCheckWord(
         introducedWord,
@@ -138,13 +157,7 @@ function enterWord(optionNumber) {
     case "2":
       maxLengthAllowed = 7;
       minLenghtAllowed = 5;
-      introducedWord = prompt(
-        "Add a medium word.\n" +
-          "Remember:\n" +
-          " - Between 5 and 7 letters long." +
-          " - No spaces.\n" +
-          " - No numbers."
-      );
+      introducedWord = prompt(introduceMedWordMsj);
 
       introducedWord = preCheckWord(
         introducedWord,
@@ -158,14 +171,7 @@ function enterWord(optionNumber) {
     case "3":
       maxLengthAllowed = 100;
       minLenghtAllowed = 8;
-      introducedWord = prompt(
-        "Add a hard word.\n" +
-          "Remember:\n" +
-          " - More than 7 letters long.\n" +
-          " - No spaces.\n" +
-          " - No numbers.\n" +
-          " - Max 100 letters long."
-      );
+      introducedWord = prompt(introduceHardWordMsj);
 
       introducedWord = preCheckWord(
         introducedWord,
@@ -252,12 +258,15 @@ function game(difficultyLevel) {
   let lives = 6;
   let selectedWord = "";
   let num;
+  let round = 1;
 
   switch (difficultyLevel) {
     case "1":
       num = randomNum(wordsEasy.length);
       if (wordsEasy.length !== 0) {
         selectedWord = wordsEasy[num];
+      } else {
+        generateNewWord("1", true);
       }
 
       break;
@@ -266,6 +275,8 @@ function game(difficultyLevel) {
       num = randomNum(wordsMedium.length);
       if (wordsMedium.length !== 0) {
         selectedWord = wordsMedium[num];
+      } else {
+        generateNewWord("2", true);
       }
       break;
 
@@ -273,6 +284,8 @@ function game(difficultyLevel) {
       num = randomNum(wordsHard.length);
       if (wordsHard.length !== 0) {
         selectedWord = wordsHard[num];
+      } else {
+        generateNewWord("3", true);
       }
       break;
 
@@ -280,21 +293,25 @@ function game(difficultyLevel) {
       break;
   }
 
-  if (selectedWord === "") {
-    generateNewWord(true);
-  }
-
   /*---------------------------------------ESTAMOS AQUÍ-------------------------------------------------------------*
   /*
   Tenemos que desarrollar las siguientes funciones:
   */
-  showInfo();
-  countLives(lives);
-  asciiHangman(lives);
+  showInfo(round, lives);
 }
 
 function randomNum(max) {
   return Math.floor(Math.random() * max);
+}
+
+function showInfo(round, lives) {
+  console.clear();
+  console.log(`Player name: ${playerName}`);
+  console.log(`Round: ${round}`);
+  console.log(`Lives remaining: ${lives}`);
+  asciiHangman(lives);
+  //---------------------------------------------------ESTAMOS AQUÍ---------------------------------------------
+  
 }
 
 function asciiHangman(lives) {
