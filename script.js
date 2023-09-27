@@ -5,7 +5,7 @@
         3.1. Checkear que la palabra introducida sea válida (no números, no repetida y dentro del rango). COMPLETADO
         3.2. Si la palabra es correcta, insertarla en el array indicado. COMPLETADO
         3.3 Dar opción de introducir tantas palabras como quiera el usuario. COMPLETADO
-    4. Guardar datos partida (como nivel y palabra/s introducidas).
+    4. Guardar datos partida (como nivel y palabra/s introducidas). 
     5. Método que gestione el tiempo (guardar como dato de partida).
     6. Mostrar resumen de partida.
     7. Llevar ranking de partidas almacenando el tiempo de cada partida y su dificultad
@@ -14,6 +14,8 @@
 
 //Declaraciñón de variables:
 let playerName;
+let lives = 6;
+let lettersUsed = "";
 let optionSetWord_Play;
 let wordsEasy = new Array();
 let wordsMedium = new Array();
@@ -61,8 +63,6 @@ function main() {
     difficultyLevel !== "3"
   );
 
-  console.log("New game.");
-  console.log("Game info:");
   game(difficultyLevel);
 }
 
@@ -255,66 +255,132 @@ function anotherWordOption() {
 }
 
 function game(difficultyLevel) {
-  let lives = 6;
   let selectedWord = "";
   let num;
   let round = 1;
+  let playerWordStatus = "";
+  let letter = "";
 
   switch (difficultyLevel) {
     case "1":
-      num = randomNum(wordsEasy.length);
-      if (wordsEasy.length !== 0) {
-        selectedWord = wordsEasy[num];
-      } else {
+      if (wordsEasy.length === 0) {
         generateNewWord("1", true);
       }
-
+      num = randomNum(wordsEasy.length);
+      selectedWord = wordsEasy[num];
       break;
 
     case "2":
-      num = randomNum(wordsMedium.length);
-      if (wordsMedium.length !== 0) {
-        selectedWord = wordsMedium[num];
-      } else {
+      if (wordsMedium.length === 0) {
         generateNewWord("2", true);
       }
+      num = randomNum(wordsMedium.length);
+      selectedWord = wordsMedium[num];
       break;
 
     case "3":
-      num = randomNum(wordsHard.length);
-      if (wordsHard.length !== 0) {
-        selectedWord = wordsHard[num];
-      } else {
+      if (wordsHard.length === 0) {
         generateNewWord("3", true);
       }
+      num = randomNum(wordsHard.length);
+      selectedWord = wordsHard[num];
       break;
 
     default:
       break;
   }
 
-  /*---------------------------------------ESTAMOS AQUÍ-------------------------------------------------------------*
-  /*
-  Tenemos que desarrollar las siguientes funciones:
-  */
-  showInfo(round, lives);
+  do {
+    playerWordStatus = checkStatus(letter, selectedWord, playerWordStatus);
+    letter = showInfo_getLetter(round, difficultyLevel, playerWordStatus);
+  } while (lives > 0);
 }
 
 function randomNum(max) {
   return Math.floor(Math.random() * max);
 }
 
-function showInfo(round, lives) {
-  console.clear();
-  console.log(`Player name: ${playerName}`);
-  console.log(`Round: ${round}`);
-  console.log(`Lives remaining: ${lives}`);
-  asciiHangman(lives);
-  //---------------------------------------------------ESTAMOS AQUÍ---------------------------------------------
-  
+function checkStatus(letter, selectedWord, playerWordStatus) {
+  let trimedWord = playerWordStatus.trim();
+  let playerWordStatusAux = playerWordStatus;
+  let letterFounded = false;
+
+  if (letter === "") {
+    letterFounded = true;
+    for (let i = 0; i < selectedWord.length; i++) {
+      playerWordStatus += "_ ";
+    }
+  } else {
+    if(!lettersUsed.includes(letter)){
+      lettersUsed += letter;
+      if (selectedWord.includes(letter)) {
+        for (let i = 0; i < selectedWord.length; i++) {
+          if (selectedWord[i] === letter) {
+            trimedWord[i] = letter;
+            playerWordStatusAux += letter + " ";
+            letterFounded = true;
+          } else {
+            if(playerWordStatusAux.trim()[i] !==)//--------------------------------ESTAMOS AQUÍ-------------------
+            //Por el momento la palabra rellenada no se actualiza correctamente
+            //Se reemplaza completamente indicando la nueva letra acertado si la hay o
+            //se borra completamente.
+            playerWordStatusAux += "_ ";
+          }
+        }
+        playerWordStatus = playerWordStatusAux;
+      }
+    }else{
+      console.log(`Your've already used this letter. Try again:`);
+      letter = true;
+    }
+    
+  }
+
+  if (!letterFounded) {
+    lives--;
+  }
+  return playerWordStatus;
 }
 
-function asciiHangman(lives) {
+function showInfo_getLetter(round, difficultyLevel, playerWordStatus) {
+  let wordStatusMsj = `Word status:   ${playerWordStatus}\n\n`;
+  let playerNameMsj = `Player name: ${playerName}\n`;
+  let roundMsj = `Round: ${round}\n`;
+  let levelMsj = `[Level ${difficultyLevel}]\n`;
+  let livesMsj = `Lives remaining: ${lives}\n\n`;
+  let errorMsj = `Error. Only one alfabetic character allowed. Please:\n`;
+  let msj = `Enter one letter:`;
+  let letter;
+  console.clear();
+
+  asciiHangman();
+
+  letter = prompt(
+    `${playerNameMsj}${roundMsj}${levelMsj}${livesMsj}${wordStatusMsj}${msj}`
+  );
+
+  do {
+    if (
+      letter.trim() === "" ||
+      letter.length !== 1 ||
+      letter.toLowerCase().charCodeAt(0) < 97 ||
+      letter.toLowerCase().charCodeAt(0) > 122
+    ) {
+      letter = prompt(
+        `${playerNameMsj}${roundMsj}${levelMsj}${livesMsj}${wordStatusMsj}${errorMsj}${msj}`
+      );
+    }
+  } while (
+    letter.trim() === "" ||
+    letter.length !== 1 ||
+    letter.toLowerCase().charCodeAt(0) < 97 ||
+    letter.toLowerCase().charCodeAt(0) > 122
+  );
+
+  return letter;
+}
+
+function asciiHangman() {
   switch (lives) {
     case 6:
       console.log(`                                                                                                    
