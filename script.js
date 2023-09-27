@@ -286,7 +286,7 @@ function randomNum(max) {
 }
 
 function checkStatus(letter, selectedWord, playerWordStatus) {
-/*-------------------------------------------------ESTAMOS AQUI--------------------------------------------------------
+/*-------------------------------------------------ESTAMOS AQUI--------------------------------------------------------*/
 
   if (letter === "") {
     for (let i = 0; i < selectedWord.length; i++) {
