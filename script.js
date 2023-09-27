@@ -1,26 +1,12 @@
-/*
-    1. Guardar nombre jugador. COMPLETADO
-    2. Al empezar el juego se podrá elegir jugar o introducir palabras. COMPLETADO
-    3. Dar opción al usuario de introducir palabras según niveles (fácil[4 o menos], medio [de 5 a 7], difícil [7 o más]).
-        3.1. Checkear que la palabra introducida sea válida (no números, no repetida y dentro del rango). COMPLETADO
-        3.2. Si la palabra es correcta, insertarla en el array indicado. COMPLETADO
-        3.3 Dar opción de introducir tantas palabras como quiera el usuario. COMPLETADO
-    4. Guardar datos partida (como nivel y palabra/s introducidas). 
-    5. Método que gestione el tiempo (guardar como dato de partida).
-    6. Mostrar resumen de partida.
-    7. Llevar ranking de partidas almacenando el tiempo de cada partida y su dificultad
-    8. (Opcional) Dibujar ahorcado
-*/
-
 //Declaraciñón de variables:
 let playerName;
 let lives = 6;
-let lettersUsed = "";
 let optionSetWord_Play;
 let wordsEasy = new Array();
 let wordsMedium = new Array();
 let wordsHard = new Array();
 let chooseOptionsMsj = "Choose one of the following options:\n";
+let lettersUsed = "";
 
 //Declaración de funciones:
 
@@ -289,7 +275,6 @@ function game(difficultyLevel) {
     default:
       break;
   }
-
   do {
     playerWordStatus = checkStatus(letter, selectedWord, playerWordStatus);
     letter = showInfo_getLetter(round, difficultyLevel, playerWordStatus);
@@ -301,44 +286,14 @@ function randomNum(max) {
 }
 
 function checkStatus(letter, selectedWord, playerWordStatus) {
-  let trimedWord = playerWordStatus.trim();
-  let playerWordStatusAux = playerWordStatus;
-  let letterFounded = false;
+/*-------------------------------------------------ESTAMOS AQUI--------------------------------------------------------
 
   if (letter === "") {
-    letterFounded = true;
     for (let i = 0; i < selectedWord.length; i++) {
       playerWordStatus += "_ ";
     }
-  } else {
-    if(!lettersUsed.includes(letter)){
-      lettersUsed += letter;
-      if (selectedWord.includes(letter)) {
-        for (let i = 0; i < selectedWord.length; i++) {
-          if (selectedWord[i] === letter) {
-            trimedWord[i] = letter;
-            playerWordStatusAux += letter + " ";
-            letterFounded = true;
-          } else {
-            if(playerWordStatusAux.trim()[i] !==)//--------------------------------ESTAMOS AQUÍ-------------------
-            //Por el momento la palabra rellenada no se actualiza correctamente
-            //Se reemplaza completamente indicando la nueva letra acertado si la hay o
-            //se borra completamente.
-            playerWordStatusAux += "_ ";
-          }
-        }
-        playerWordStatus = playerWordStatusAux;
-      }
-    }else{
-      console.log(`Your've already used this letter. Try again:`);
-      letter = true;
-    }
-    
-  }
+  } 
 
-  if (!letterFounded) {
-    lives--;
-  }
   return playerWordStatus;
 }
 
