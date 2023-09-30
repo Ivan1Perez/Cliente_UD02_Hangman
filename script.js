@@ -244,7 +244,7 @@ function game(difficultyLevel) {
   let selectedWord = "";
   let num;
   let round = 1;
-  let playerWordStatus = "";
+  let playerWordStatus;
   let letter = "";
 
   switch (difficultyLevel) {
@@ -275,24 +275,49 @@ function game(difficultyLevel) {
     default:
       break;
   }
-  do {
-    playerWordStatus = checkStatus(letter, selectedWord, playerWordStatus);
+
+  playerWordStatus = initialWordStatus(selectedWord);
+
+  do{
     letter = showInfo_getLetter(round, difficultyLevel, playerWordStatus);
-  } while (lives > 0);
+    playerWordStatus = checkStatus(letter, selectedWord, playerWordStatus);
+  }while(lives > 0);
+  
 }
 
 function randomNum(max) {
   return Math.floor(Math.random() * max);
 }
 
-function checkStatus(letter, selectedWord, playerWordStatus) {
-/*-------------------------------------------------ESTAMOS AQUI--------------------------------------------------------*/
+function initialWordStatus(selectedWord) {
+  let wordStatus = "";
 
-  if (letter === "") {
-    for (let i = 0; i < selectedWord.length; i++) {
-      playerWordStatus += "_ ";
+  for (let i = 0; i < selectedWord.length; i++) {
+    wordStatus += "_ ";
+  }
+
+  return wordStatus;
+}
+
+function checkStatus(letter, selectedWord, playerWordStatus) {
+  if(lettersUsed.includes(letter)){
+    /*-------------------------------ESTAMOS AQUÍ---------------------------------*/
+    /*
+      Parece que el código ya funciona. Ahora tenemos que hacer que el siguiente mensaje aparezca en el prompt
+    */
+    console.log(`You've already used this letter. No lives has been deducted.`);
+  }else{
+    lettersUsed += letter;
+    if (selectedWord.includes(letter)) {
+      for (let i = 0; i < selectedWord.length; i++) {
+        if(selectedWord[i] === letter){
+          playerWordStatus = playerWordStatus.substr(0, (i*2)) + letter + playerWordStatus.substr(i*2+1);
+        }
+      }
+    }else{
+      lives--;
     }
-  } 
+  }
 
   return playerWordStatus;
 }
@@ -306,7 +331,6 @@ function showInfo_getLetter(round, difficultyLevel, playerWordStatus) {
   let errorMsj = `Error. Only one alfabetic character allowed. Please:\n`;
   let msj = `Enter one letter:`;
   let letter;
-  console.clear();
 
   asciiHangman();
 
