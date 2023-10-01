@@ -11,22 +11,28 @@ let letterUsed = false;
 let wordGuessed = false;
 let keepPlaying = true;
 let ggMsg;
+let gamesSummary = `Games summary:\n\n`;
+let time;
+let seeGamesSummaryMsg = new Array(`Do you want to see all games summary?\n`);
+let round = 1;
+let gamesCounter = 0;
+let gameWon = "Yes";
 
 //Declaración de funciones:
 
 function main() {
+  let seeGamesSummary;
   let wordsGenerated = false;
   let regularDifficultyHeader = "Select difficulty:\n";
   let difficultyOptions =
     "Easy --> Enter '1'.\n" + "Medium --> Enter '2'.\n" + "Hard --> Enter '3'.";
   let difficultyLevel;
-  let playAgainOptions = new Array(
+  let yesNoOptions = new Array(
     `  - Yes --> Enter '1'\n`,
     `  - No  --> Enter '2'\n`
   );
   let playAgainAnswer;
-  ggMsg = new Array(`Great game. Do you want to play again?\n`);
-
+  ggMsg = new Array(`Do you want to play again?\n`);
 
   console.log("Welcome to The Hangman Game.");
 
@@ -38,7 +44,7 @@ function main() {
     console.log("Play!");
   } else {
     do {
-      generateNewWord(0, false);
+      wordsGenerated = generateNewWord(0, false);
     } while (wordsGenerated);
   }
 
@@ -61,12 +67,23 @@ function main() {
   );
 
   game(difficultyLevel);
+  gamesCounter++;
+  gamesSummary += `[\n  Game ${gamesCounter}\n  Player name: ${playerName}\n  Word guessed: ${gameWon}\n  Lives remaining: ${lives}\n  $Time: ${time}\n  Letters used: [${lettersUsed}]\n  Rounds: ${round}\n]\n\n`;
   lives = 6;
   lettersUsed = "";
   letterUsed = false;
   wordGuessed = false;
-  playAgainAnswer = optionsFunct(ggMsg, playAgainOptions);
-  keepPlaying = playAgainAnswer === "1";
+  round = 1;
+  playAgainAnswer = optionsFunct(ggMsg, yesNoOptions);
+  if (playAgainAnswer === "1") {
+    keepPlaying = true;
+  } else {
+    keepPlaying = false;
+    seeGamesSummary = optionsFunct(seeGamesSummaryMsg, yesNoOptions);
+    if (seeGamesSummary === "1") {
+      window.alert(gamesSummary);
+    }
+  }
 }
 
 function optionSetWord_PlayFunction() {
@@ -108,7 +125,7 @@ function generateNewWord(level, noWords) {
     enterWord(option, noWords);
   }
 
-  wordsGenerated = anotherWordOption();
+  return anotherWordOption();
 }
 
 function enterWord(optionNumber, noWords) {
@@ -278,15 +295,17 @@ function optionsFunct(messages, options) {
 function game(difficultyLevel) {
   let selectedWord = "";
   let num;
-  let round = 1;
   let playerWordStatus;
   let letter = "";
-  let selectedWordMsgFinishGame = `Correct! The word is: `;
+  let wordAdded = true;
 
   switch (difficultyLevel) {
     case "1":
       if (wordsEasy.length === 0) {
-        generateNewWord("1", true);
+        do {
+          wordsGenerated = generateNewWord("1", wordAdded);
+          wordAdded = false;
+        } while (wordsGenerated);
       }
       num = randomNum(wordsEasy.length);
       selectedWord = wordsEasy[num];
@@ -294,7 +313,10 @@ function game(difficultyLevel) {
 
     case "2":
       if (wordsMedium.length === 0) {
-        generateNewWord("2", true);
+        do {
+          wordsGenerated = generateNewWord("2", wordAdded);
+          wordAdded = false;
+        } while (wordsGenerated);
       }
       num = randomNum(wordsMedium.length);
       selectedWord = wordsMedium[num];
@@ -302,7 +324,10 @@ function game(difficultyLevel) {
 
     case "3":
       if (wordsHard.length === 0) {
-        generateNewWord("3", true);
+        do {
+          wordsGenerated = generateNewWord("3", true);
+          wordAdded = false;
+        } while (wordsGenerated);
       }
       num = randomNum(wordsHard.length);
       selectedWord = wordsHard[num];
@@ -312,8 +337,6 @@ function game(difficultyLevel) {
       break;
   }
 
-  selectedWordMsgFinishGame += `${selectedWord}\n`;
-  ggMsg.unshift(selectedWordMsgFinishGame);
   playerWordStatus = initialWordStatus(selectedWord);
 
   do {
@@ -322,7 +345,24 @@ function game(difficultyLevel) {
     if (!playerWordStatus.includes("_")) {
       wordGuessed = true;
     }
+    round++;
   } while (lives > 0 && !wordGuessed);
+
+  ggMsg.unshift(
+    `Game summary:\n  
+       - Total time: ${time}\n
+       - Letters used: [${lettersUsed}]\n
+       - Rounds: ${round}\n\n`
+  );
+
+  if (lives === 0) {
+    ggMsg.unshift("You lose.\n\n");
+    gameWon = "No";
+    asciiHangman();
+  } else {
+    ggMsg.unshift(`Correct! The word is: [${selectedWord}]\n\n`);
+    gameWon = "Yes";
+  }
 }
 
 function randomNum(max) {
