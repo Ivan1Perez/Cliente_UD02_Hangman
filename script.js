@@ -68,7 +68,7 @@ function main() {
 
   game(difficultyLevel);
   gamesCounter++;
-  gamesSummary += `[\n  Game ${gamesCounter}\n  Player name: ${playerName}\n  Word guessed: ${gameWon}\n  Lives remaining: ${lives}\n  $Time: ${time}\n  Letters used: [${lettersUsed}]\n  Rounds: ${round}\n]\n\n`;
+  gamesSummary += `[\n  Game ${gamesCounter}\n  Player name: ${playerName}\n  Word guessed: ${gameWon}\n  Lives remaining: ${lives}\n  Time: ${time} seconds\n  Letters used: [${lettersUsed}]\n  Rounds: ${round}\n]\n\n`;
   lives = 6;
   lettersUsed = "";
   letterUsed = false;
@@ -298,6 +298,8 @@ function game(difficultyLevel) {
   let playerWordStatus;
   let letter = "";
   let wordAdded = true;
+  let timeStart;
+  let timeFinish;
 
   switch (difficultyLevel) {
     case "1":
@@ -338,6 +340,7 @@ function game(difficultyLevel) {
   }
 
   playerWordStatus = initialWordStatus(selectedWord);
+  timeStart = new Date();
 
   do {
     letter = showInfo_getLetter(round, difficultyLevel, playerWordStatus);
@@ -348,11 +351,14 @@ function game(difficultyLevel) {
     round++;
   } while (lives > 0 && !wordGuessed);
 
+  timeFinish = new Date();
+  time = (timeFinish - timeStart) / 1000;
   ggMsg.unshift(
     `Game summary:\n  
-       - Total time: ${time}\n
+       - Total time: ${time} seconds\n
        - Letters used: [${lettersUsed}]\n
-       - Rounds: ${round}\n\n`
+       - Rounds: ${round}\n
+       - Lives remaining: ${lives}\n\n`
   );
 
   if (lives === 0) {
